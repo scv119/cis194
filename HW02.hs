@@ -1,6 +1,8 @@
 {-# OPTIONS_GHC -Wall #-}
 module HW02 where
 
+import Data.List
+
 -- Mastermind -----------------------------------------
 
 -- A peg can be one of six colors
@@ -23,20 +25,21 @@ colors = [Red, Green, Blue, Yellow, Orange, Purple]
 
 -- Get the number of exact matches between the actual code and the guess
 exactMatches :: Code -> Code -> Int
-exactMatches actual guess = foldl (\x ([y z]) -> if y == z then (1 + x) else x) 0 transposed
+exactMatches actual guess = foldl (\x [y, z] -> if y == z then (1 + x) else x) 0 transposed
   where transposed = transpose [actual, guess]
 
 -- Exercise 2 -----------------------------------------
 
 -- For each peg in xs, count how many times is occurs in ys
+
 countColors :: Code -> [Int]
-countColors code = map (\color -> (countColor color code)) colors
-  where countColor color code = foldl (\x y -> if color == y then (1 + x) then x) 0 code
+countColors code = map (\color -> countColor color code) colors
+  where countColor color code = foldl (\x y -> if color == y then (1 + x) else x) 0 code
 
 -- Count number of matches between the actual code and the guess
 matches :: Code -> Code -> Int
 matches guess actual = foldl (\x ([y, z]) -> x + min y z) 0 transposed
-  where transposed = transpose [countColor guess, countColor actual]
+  where transposed = transpose [countColors guess, countColors actual]
 
 -- Exercise 3 -----------------------------------------
 
@@ -55,12 +58,14 @@ isConsistent (Move code e n) code1 = (getMove code code1) == (Move code e n)
 -- Exercise 5 -----------------------------------------
 
 filterCodes :: Move -> [Code] -> [Code]
-filterCodes = undefined
-
+filterCodes m x = filter (\code1 -> isConsistent m code1) x
 -- Exercise 6 -----------------------------------------
 
 allCodes :: Int -> [Code]
-allCodes = undefined
+allCodes n
+  | n == 0 = []
+  | otherwise = expand $ allCodes $ n - 1
+    where expand codes = concat $ map (\c -> (map (\cc -> cc:c) colors)) codes
 
 -- Exercise 7 -----------------------------------------
 
