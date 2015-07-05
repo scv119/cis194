@@ -53,7 +53,7 @@ getMove secret guess = Move guess exactMatch nonExactMatch
 -- Exercise 4 -----------------------------------------
 
 isConsistent :: Move -> Code -> Bool
-isConsistent (Move code e n) code1 = (getMove code code1) == (Move code e n)
+isConsistent (Move code e n) code1 = (getMove code code1) == (Move code1 e n)
 
 -- Exercise 5 -----------------------------------------
 
@@ -63,7 +63,7 @@ filterCodes m x = filter (\code1 -> isConsistent m code1) x
 
 allCodes :: Int -> [Code]
 allCodes n
-  | n == 0 = []
+  | n == 0 = [[]]
   | otherwise = expand $ allCodes $ n - 1
     where expand codes = concat $ map (\c -> (map (\cc -> cc:c) colors)) codes
 
