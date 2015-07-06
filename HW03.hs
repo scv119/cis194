@@ -34,15 +34,30 @@ type State = String -> Int
 -- Exercise 1 -----------------------------------------
 
 extend :: State -> String -> Int -> State
-extend = undefined
+extend st key value input
+  | input == key = value
+  | otherwise = st input
 
 empty :: State
-empty = undefined
+empty _ = 0
 
 -- Exercise 2 -----------------------------------------
 
 evalE :: State -> Expression -> Int
-evalE = undefined
+evalE state exp = case exp of
+  Var var -> state var
+  Val i -> i
+  Op e0 bop e1 -> bopf (evalE e0) (evalE e1)
+    where bopf = case bop of
+      Plus -> (+)
+      Minus -> (-)
+      Times -> (*)
+      Divide -> (/)
+      Gt -> (>)
+      Ge -> (>=)
+      Lt -> (<)
+      Le -> (<=)
+      Eql -> (==)
 
 -- Exercise 3 -----------------------------------------
 
