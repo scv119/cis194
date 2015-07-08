@@ -47,17 +47,22 @@ evalE :: State -> Expression -> Int
 evalE state exp = case exp of
   Var var -> state var
   Val i -> i
-  Op e0 bop e1 -> bopf (evalE e0) (evalE e1)
-    where bopf = case bop of
-      Plus -> (+)
-      Minus -> (-)
-      Times -> (*)
-      Divide -> (/)
-      Gt -> (>)
-      Ge -> (>=)
-      Lt -> (<)
-      Le -> (<=)
-      Eql -> (==)
+  Op e0 bop e1 -> bopf (evalE state e0) (evalE state e1)
+    where
+      bopf = case bop of
+        Plus -> (+)
+        Minus -> (-)
+        Times -> (*)
+        Divide -> div
+        Gt -> b2i (>)
+        Ge -> b2i (>=)
+        Lt -> b2i (<)
+        Le -> b2i (<=)
+        Eql -> b2i (==)
+      where
+        b2i f x y
+          | (f x y) == True = 1
+          | otherwise = 0
 
 -- Exercise 3 -----------------------------------------
 
@@ -69,12 +74,12 @@ data DietStatement = DAssign String Expression
                      deriving (Show, Eq)
 
 desugar :: Statement -> DietStatement
-desugar statement = case statment of
+desugar statement = case statement of
   Incr string -> DAssign string (Op (Var string) Plus (Val 1))
-  For init condition update statment -> DSequence (desugar init) (DWhile condition (DSequence (desugar update) (desugar Statement)))
-  Assign string exp -> DAssign string exp 
-  If condition st0 st1 -> DIf condition (desugar st0) (desugar st1) 
-  While exp statement -> DWhile exp (desugar Statement)   
+  For init condition update stmt -> DSequence (desugar init) (DWhile condition (DSequence (desugar stmt) (desugar update)))
+  Assign string exp -> DAssign string exp
+  If condition st0 st1 -> DIf condition (desugar st0) (desugar st1)
+  While exp stmt -> DWhile exp (desugar stmt)
   Sequence st0 st1 -> DSequence (desugar st0) (desugar st1)
   Skip -> DSkip
 
