@@ -8,34 +8,57 @@ import System.Environment (getArgs)
 
 import qualified Data.ByteString.Lazy as BS
 import qualified Data.Map.Strict as Map
+imoprt qualified Data.Bits as Bits
 
 import Parser
 
 -- Exercise 1 -----------------------------------------
 
 getSecret :: FilePath -> FilePath -> IO ByteString
-getSecret = undefined
+getSecret originalFile encryptedFile = do
+  originalContent <- BS.readFile originalFile
+  encryptedContent <- Bs.readFile encryptedFile
+  return filter (\word -> word /= (fromIntegral 0))) $ map (\(word0, word1) -> Bits.xor word0 word) $ zip originalContent encryptedContent
 
 -- Exercise 2 -----------------------------------------
 
 decryptWithKey :: ByteString -> FilePath -> IO ()
-decryptWithKey = undefined
+decryptWithKey key encryptedFile = do
+  encryptedContent <- BS.readFile $ encryptedFile ++ ".enc"
+  let decypher content = map (\(word0, word1) -> Bits.xor word0 word1) $ zip content $ cycle key
+  BS.writeFile $ decypher encryptedFile encryptedFile
 
 -- Exercise 3 -----------------------------------------
 
 parseFile :: FromJSON a => FilePath -> IO (Maybe a)
-parseFile = undefined
+parseFile jsonFilePath = do
+  fileContent <- BS.readFile jsonFilePath
+  return decode fileContent
 
 -- Exercise 4 -----------------------------------------
 
 getBadTs :: FilePath -> FilePath -> IO (Maybe [Transaction])
-getBadTs = undefined
+getBadTs victimsListFile transactionFile = do
+  maybeVictims <- parseFile victimsListFile :: IO (Maybe [TId])
+  maybeTransactions <- parseFile transactionFile :: IO (Maybe [Transaction])
+  return getBadTs' maybeVictims maybeTransactions
+  where
+    getBadTs'
+      | Nothing _ = Nothing
+      | (Just victims) maybeTransactions = map (\t -> any (\victim -> victim == tid t) victims) <$> maybeTransactions
 
 -- Exercise 5 -----------------------------------------
 
 getFlow :: [Transaction] -> Map String Integer
-getFlow = undefined
-
+getFlow = foldl addTransaction emty
+  where
+    addTransaction' flowMap name value = let balance = lookup name flowMap
+      in case balance of
+        Nothing -> insert name value flowMap
+        Just b -> insert name (value + b) flowMap
+    addTransaction flowMap transaction =
+      addTransaction flowMap (from transaction) ((-1) * (amount transaction))
+      addTransaction flowMap (to transaction) (amount transaction)
 -- Exercise 6 -----------------------------------------
 
 getCriminal :: Map String Integer -> String
