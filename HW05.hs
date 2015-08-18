@@ -59,13 +59,16 @@ getFlow = foldl addTransaction Map.empty
         Nothing -> Map.insert name value flowMap
         Just b -> Map.insert name (value + b) flowMap
     addTransaction flowMap transaction =
-      addTransaction' flowMap (from transaction) ((-1) * (amount transaction))
-      addTransaction' flowMap (to transaction) (amount transaction)
+      addTransaction' flowMap1 (from transaction) ((-1) * (amount transaction))
+      where
+        flowMap1 = addTransaction' flowMap (to transaction) (amount transaction)
 
 -- Exercise 6 -----------------------------------------
 
 getCriminal :: Map String Integer -> String
-getCriminal = undefined
+getCriminal = fst . Map.foldrWithKey findMax ("", 0)
+  where
+    findMax name value (currentName, maxValue) = if (value < maxValue) then (currentName, maxValue) else (name, value)
 
 -- Exercise 7 -----------------------------------------
 
