@@ -7,6 +7,8 @@ import Data.ByteString.Lazy (ByteString)
 import Data.Map.Strict (Map)
 import System.Environment (getArgs)
 
+import qualified Data.Ord as Ord
+import qualified Data.List as List
 import qualified Data.ByteString.Lazy as BS
 import qualified Data.Map.Strict as Map
 import qualified Data.Bits as Bits
@@ -73,7 +75,20 @@ getCriminal = fst . Map.foldrWithKey findMax ("", 0)
 -- Exercise 7 -----------------------------------------
 
 undoTs :: Map String Integer -> [TId] -> [Transaction]
-undoTs = undefined
+undoTs flow tids = reverse $ undoTs' ([], []) tids
+  where undoTs' (payers, payees) (tid0:tids)
+          | length payers == 0 = []
+          | otherwise = t:(undoTs' (newPayers,newPayees) tids)
+              where payer:payerTail = payers
+                    payee:payeeTail = payees
+                    amount = min (snd payer) (snd payee)
+                    t = Transaction (fst payer) (fst payee) amount tid0
+                    newPayers = if (snd payer == amount) then payerTail else (fst payer, snd payer - amount):payeeTail
+                    newPayees = if (snd payee == amount) then payeeTail else (fst payee, snd payee - amount):payeeTail
+        sortFlow flowMap = (sortFlow' payer, sortFlow' payee)
+            where sortFlow' x = reverse $ List.sortBy (Ord.comparing snd) x
+                  payer = filter (\x -> snd x > 0) $ Map.toList flowMap
+                  payee = map (\(x,y) -> (x,-1 * y)) $ filter (\x -> snd x < 0) $ Map.toList flowMap
 
 -- Exercise 8 -----------------------------------------
 
