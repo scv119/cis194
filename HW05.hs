@@ -93,7 +93,7 @@ undoTs flow tids = reverse $ undoTs' ([], []) tids
 -- Exercise 8 -----------------------------------------
 
 writeJSON :: ToJSON a => FilePath -> a -> IO ()
-writeJSON = undefined
+writeJSON filePath transactions = BS.writeFile filePath $ encode transactions
 
 -- Exercise 9 -----------------------------------------
 
