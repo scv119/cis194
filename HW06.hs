@@ -17,7 +17,8 @@ fibs1 = map (\x -> fib x) [0..]
 -- Exercise 2 -----------------------------------------
 
 fibs2 :: [Integer]
-fibs2 = undefined
+fibs2 = [1] ++ fibs2'
+  where fibs2' = zipWith (+) (0:1:fibs2') (1:fibs2')
 
 -- Exercise 3 -----------------------------------------
 
