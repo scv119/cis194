@@ -30,12 +30,12 @@ instance Show a => Show (Stream a) where
              ++ ",..."
 
 streamToList :: Stream a -> [a]
-streamToList = undefined
+streamToList (Cons a b) = a:(streamToList b)
 
 -- Exercise 4 -----------------------------------------
 
 instance Functor Stream where
-    fmap = undefined
+    fmap g (Cons a b) = Cons (g a) (fmap g b)
 
 -- Exercise 5 -----------------------------------------
 
