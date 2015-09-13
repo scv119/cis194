@@ -56,16 +56,16 @@ sTake n (Cons first remain)
 -- Exercise 6 -----------------------------------------
 
 nats :: Stream Integer
-nats = undefined
+nats = sIterate (+1) 0
 
 ruler :: Stream Integer
-ruler = undefined
+ruler = foldr1 sInterleave $ map sRepeat $ streamToList nats
 
 -- Exercise 7 -----------------------------------------
 
 -- | Implementation of C rand
 rand :: Int -> Stream Int
-rand = undefined
+rand x = Cons x $ rand ((1103515245 * x + 12345) `mod` 2147483648)
 
 -- Exercise 8 -----------------------------------------
 
@@ -78,10 +78,13 @@ minMaxSlow xs = Just (minimum xs, maximum xs)
 
 {- Total Memory in use: ??? MB -}
 minMax :: [Int] -> Maybe (Int, Int)
-minMax = undefined
+minMax [] = Nothing
+minMax [x] = Just (x, x)
+minMax (x:xs) = minMax xs >>= (\(minV, maxV) -> Just ((min minV x), (max maxV x)))
+
 
 main :: IO ()
-main = print $ minMaxSlow $ sTake 1000000 $ rand 7666532
+main = print $ minMaxSlow $ sTake 500000 $ rand 7666532
 
 -- Exercise 10 ----------------------------------------
 
