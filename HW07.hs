@@ -18,15 +18,24 @@ import qualified Data.Vector as V
 -- Exercise 1 -----------------------------------------
 
 liftM :: Monad m => (a -> b) -> m a -> m b
-liftM = undefined
+liftM f ma = ma >>= \x -> return (f x)
+liftM' f ma = do
+  x <- ma
+  return (f x)
 
 swapV :: Int -> Int -> Vector a -> Maybe (Vector a)
-swapV = undefined
+swapV i j v = do
+  vi <- v !? i
+  vj <- v !? j
+  return $ v // [(i, vj), (j, vi)]
+
+swapV' i j v = liftM2 (\vi vj -> v // [(i, vj), (j, vi)]) (v !? i) (v !? j)
 
 -- Exercise 2 -----------------------------------------
 
 mapM :: Monad m => (a -> m b) -> [a] -> m [b]
-mapM = undefined
+mapM _ [] = return []
+mapM f (a:as) = liftM2 (:) (f a) (mapM f as)
 
 getElts :: [Int] -> Vector a -> Maybe [a]
 getElts = undefined
