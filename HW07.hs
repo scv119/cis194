@@ -38,27 +38,31 @@ mapM _ [] = return []
 mapM f (a:as) = liftM2 (:) (f a) (mapM f as)
 
 getElts :: [Int] -> Vector a -> Maybe [a]
-getElts = undefined
+getElts idxs v = mapM (v !?) idxs
 
 -- Exercise 3 -----------------------------------------
 
 type Rnd a = Rand StdGen a
 
 randomElt :: Vector a -> Rnd (Maybe a)
-randomElt = undefined
+randomElt v = (v !?) <$> getRandomR (0, V.length v)
 
 -- Exercise 4 -----------------------------------------
 
 randomVec :: Random a => Int -> Rnd (Vector a)
-randomVec = undefined
+randomVec n = V.fromList <$> replicateM n getRandom
 
 randomVecR :: Random a => Int -> (a, a) -> Rnd (Vector a)
-randomVecR = undefined
+randomVecR n x = V.fromList <$> replicateM n (getRandomR x)
 
 -- Exercise 5 -----------------------------------------
 
 shuffle :: Vector a -> Rnd (Vector a)
-shuffle = undefined
+shuffle v = foldr swap v <$> mapM getRandomX [1..n]
+  where
+    getRandomX i = (\j -> (i, j)) <$> getRandom (0, i)
+    n = V.length v
+    swap (x, y) v' = v' // [(x, v' ! y), (y, v' ! x)]
 
 -- Exercise 6 -----------------------------------------
 
