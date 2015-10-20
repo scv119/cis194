@@ -66,8 +66,8 @@ shuffle v = foldr swap v <$> mapM getRandomX [1..n]
 
 -- Exercise 6 -----------------------------------------
 
-partitionAt :: Ord a => Vector a -> Int -> (Vector a, a, Vector a)
-partitionAt = undefined
+partitionAt :: Ord a => Vector a -> a -> (Vector a, a, Vector a)
+partitionAt v value = ((V.filter (<value) v), value, (V.filter (>=value) v))
 
 -- Exercise 7 -----------------------------------------
 
