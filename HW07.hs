@@ -60,7 +60,7 @@ randomVecR n x = V.fromList <$> replicateM n (getRandomR x)
 shuffle :: Vector a -> Rnd (Vector a)
 shuffle v = foldr swap v <$> mapM getRandomX [1..n]
   where
-    getRandomX i = (\j -> (i, j)) <$> getRandom (0, i)
+    getRandomX i = (\j -> (i, j)) <$> getRandomR (0, i)
     n = V.length v
     swap (x, y) v' = v' // [(x, v' ! y), (y, v' ! x)]
 
