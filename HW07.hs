@@ -66,8 +66,9 @@ shuffle v = foldr swap v <$> mapM getRandomX [1..n]
 
 -- Exercise 6 -----------------------------------------
 
-partitionAt :: Ord a => Vector a -> a -> (Vector a, a, Vector a)
-partitionAt v value = ((V.filter (<value) v), value, (V.filter (>=value) v))
+partitionAt :: Ord a => Vector a -> Int -> (Vector a, a, Vector a)
+partitionAt v idx = ((V.filter (<value) v), value, (V.filter (>=value) v))
+                    where value = v ! idx
 
 -- Exercise 7 -----------------------------------------
 
@@ -92,11 +93,13 @@ qsort v
 qsortR :: Ord a => Vector a -> Rnd (Vector a)
 qsortR v
   | V.null v = return V.empty
-  | otherwise = merge first second
-  where merge = liftM2 (<>)
-        z = (v !) <$> getRandomR (0, V.length v)
-        first = z >>= (\x -> qsortR [ y | y <- v, y < x ])
-        second = z >>= (\x -> (cons x $ qsortR [ y | y <- v, y > x ]))
+  | otherwise = do
+    idx <- getRandomR (0, V.length v - 1)
+    let (first, x, second) = partitionAt v idx
+    let v' = (first <> second)
+    first' <- qsortR [ y | y <- v', y < x]
+    second' <- qsortR [ y | y <- v', y > x]
+    return $ first' <> (cons x second')
 -- Exercise 9 -----------------------------------------
 
 -- Selection
