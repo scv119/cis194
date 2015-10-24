@@ -78,13 +78,25 @@ quicksort (x:xs) = quicksort [ y | y <- xs, y < x ]
                    <> (x : quicksort [ y | y <- xs, y >= x ])
 
 qsort :: Ord a => Vector a -> Vector a
-qsort = undefined
+qsort v
+  | V.null v = V.empty
+  | otherwise = qsort [ y | y <- xs, y < x ]
+                <> (cons x $ qsort [ y | y <- xs, y >= x ])
+  where
+    x = V.head v
+    xs = V.tail v
+
 
 -- Exercise 8 -----------------------------------------
 
 qsortR :: Ord a => Vector a -> Rnd (Vector a)
-qsortR = undefined
-
+qsortR v
+  | V.null v = return V.empty
+  | otherwise = merge first second
+  where merge = liftM2 (<>)
+        z = (v !) <$> getRandomR (0, V.length v)
+        first = z >>= (\x -> qsortR [ y | y <- v, y < x ])
+        second = z >>= (\x -> (cons x $ qsortR [ y | y <- v, y > x ]))
 -- Exercise 9 -----------------------------------------
 
 -- Selection
