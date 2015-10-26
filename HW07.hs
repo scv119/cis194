@@ -121,20 +121,28 @@ select n v
 -- Exercise 10 ----------------------------------------
 
 allCards :: Deck
-allCards = undefined
+allCards = [ Card label suit | suit <- suits, label <- labels ]
 
 newDeck :: Rnd Deck
-newDeck =  undefined
+newDeck =  shuffle allCards
 
 -- Exercise 11 ----------------------------------------
 
 nextCard :: Deck -> Maybe (Card, Deck)
-nextCard = undefined
+nextCard deck
+  | V.null deck = Nothing
+  | otherwise = Just (V.head deck, V.tail deck)
 
 -- Exercise 12 ----------------------------------------
 
 getCards :: Int -> Deck -> Maybe ([Card], Deck)
-getCards = undefined
+getCards n deck = getCards' n [] deck
+  where
+    getCards' n ret deck
+      | n == 0 = Just (ret, deck)
+      | otherwise = do
+        (card, deck') <- nextCard(deck)
+        getCards' (n - 1) (ret ++ [card]) deck'
 
 -- Exercise 13 ----------------------------------------
 
