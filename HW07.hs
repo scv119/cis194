@@ -98,13 +98,25 @@ qsortR v
     let (first, x, second) = partitionAt v idx
     let v' = (first <> second)
     first' <- qsortR [ y | y <- v', y < x]
-    second' <- qsortR [ y | y <- v', y > x]
+    second' <- qsortR [ y | y <- v', y >= x]
     return $ first' <> (cons x second')
 -- Exercise 9 -----------------------------------------
 
 -- Selection
 select :: Ord a => Int -> Vector a -> Rnd (Maybe a)
-select = undefined
+select n v
+  | n >= V.length v = return Nothing
+  | otherwise = do
+      idx <- getRandomR (0, V.length v - 1)
+      let (first, x, second) = partitionAt v idx
+      let v' = (first <> second)
+      let first' = [y | y <- v', y < x]
+      let second' = [y | y <- v', y >= x]
+      if (V.length first') < n
+        then select (n - (V.length first') - 1) second'
+        else if (V.length first') == n
+          then return $ Just x
+          else select n first'
 
 -- Exercise 10 ----------------------------------------
 
